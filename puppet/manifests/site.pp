@@ -21,6 +21,13 @@ node 'jira' {
     username => 'jira',
     uid      => '20001'
   }
+  
+  common::nfs { '/common_data':
+    base_dir => '/common_data',
+    group => 'atlassian'
+  }
+  
+  
 }
 
 node 'crowd' {
