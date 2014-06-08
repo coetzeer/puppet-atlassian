@@ -52,10 +52,10 @@ Vagrant::Config.run do |config|
  			puppet module install haraldsk-nfs
  		fi
  		
- 		if [ ! -d /etc/puppet/modules/users ];
- 		then
- 			puppet module install mthibaut-users
- 		fi
+# 		if [ ! -d /etc/puppet/modules/users ];
+# 		then
+# 			puppet module install mthibaut-users
+#		fi
  		
  		if [ ! -d /etc/puppet/modules/mysql ];
  		then

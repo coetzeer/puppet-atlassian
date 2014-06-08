@@ -1,7 +1,5 @@
 # create a new run stage to ensure certain modules are included first
-stage { 'pre':
-  before => Stage['main']
-}
+stage { 'pre': before => Stage['main'] }
 
 # add the baseconfig module to the new 'pre' run stage
 class { 'baseconfig':
@@ -13,34 +11,50 @@ include baseconfig
 
 node 'common' {
   include common
-  
-  common::conf{'common_stuff':
-    export => "/common_data"
-  }
-  
+
+  common::conf { 'common_stuff': export => "/common_data" }
+
 }
 
 node 'jira' {
-  #include nginx, nginx_vhosts
+  common::user { 'jira':
+    username => 'jira',
+    uid      => '20001'
+  }
 }
 
 node 'crowd' {
-  #include nginx, nginx_vhosts
+  common::user { 'crowd':
+    username => 'crowd',
+    uid      => '20004'
+  }
 }
 
 node 'stash' {
-  #include nginx, nginx_vhosts
+  common::user { 'stash':
+    username => 'stash',
+    uid      => '20005'
+  }
 }
 
 node 'fisheye' {
-  #include nginx, nginx_vhosts
+  common::user { 'fisheye':
+    username => 'stash',
+    uid      => '20003'
+  }
 }
 
 node 'confluence' {
-  #include nginx, nginx_vhosts
+  common::user { 'confluence':
+    username => 'stash',
+    uid      => '20005'
+  }
 }
 
 node 'bamboo' {
-  #include nginx, nginx_vhosts
+  common::user { 'bamboo':
+    username => 'bamboo',
+    uid      => '20006'
+  }
 }
 
