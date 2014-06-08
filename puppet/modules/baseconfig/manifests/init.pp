@@ -37,7 +37,7 @@ class baseconfig {
     downloadDir          => "/data/install",
     urandomJavaFix       => true,
     rsakeySizeFix        => false,
-    sourcePath           => "/vagrant/binaries",
+    sourcePath           => "/vagrant/puppet/binaries",
     javaHomes            => '/usr/java',
   }
 

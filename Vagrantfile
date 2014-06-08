@@ -42,12 +42,34 @@ Vagrant::Config.run do |config|
   
   config.vm.provision :shell do |shell|
  	shell.inline = "
- 		puppet module install -f biemond-jdk7"
+ 		if [ ! -d /etc/puppet/modules/jdk7 ];
+ 		then
+ 			puppet module install -f biemond-jdk7
+ 		fi
+ 		
+ 		if [ ! -d /etc/puppet/modules/nfs ];
+ 		then
+ 			puppet module install haraldsk-nfs
+ 		fi
+ 		
+ 		if [ ! -d /etc/puppet/modules/users ];
+ 		then
+ 			puppet module install mthibaut-users
+ 		fi
+ 		
+ 		if [ ! -d /etc/puppet/modules/mysql ];
+ 		then
+ 			puppet module install puppetlabs-mysql
+ 		fi
+ 		
+ 		"
   end
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = 'puppet/manifests'
     puppet.manifest_file = 'site.pp'
     puppet.module_path = 'puppet/modules'
+    puppet.hiera_config_path = "hiera.yaml"
+    puppet.working_directory = "/vagrant"
   end
 end

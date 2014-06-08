@@ -12,7 +12,12 @@ class { 'baseconfig':
 include baseconfig
 
 node 'common' {
-  #include nginx, nginx_vhosts
+  include common
+  
+  common::conf{'common_stuff':
+    export => "/common_data"
+  }
+  
 }
 
 node 'jira' {
