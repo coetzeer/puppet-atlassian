@@ -6,6 +6,13 @@ class baseconfig {
 
 
   host {
+    
+    'puppet':
+      ip => '192.168.0.41';
+    
+    'master':
+      ip => '192.168.0.41';
+    
     'common':
       ip => '192.168.0.42';
 

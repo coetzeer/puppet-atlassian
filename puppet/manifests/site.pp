@@ -9,6 +9,16 @@ class { 'baseconfig':
 # all boxes get the base config
 include baseconfig
 
+node 'master' {
+
+  # Configure puppetdb and its underlying database
+  class { 'puppetdb': }
+  # Configure the puppet master to use puppetdb
+  class { 'puppetdb::master::config': }
+
+
+}
+
 node 'common' {
   include common
 
