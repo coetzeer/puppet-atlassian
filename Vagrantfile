@@ -44,6 +44,17 @@ Vagrant.configure("2") do |config|
 		 		then
 		 			puppet module install -f biemond-jdk7
 		 	fi
+		 			 	
+		 	if [ ! -d /etc/puppet/modules/dashboard ];
+		 		then
+		 			puppet module install puppetlabs-dashboard
+		 	fi
+		 	
+		 	if [ ! -d /etc/puppet/modules/mysql ];
+		 		then
+		 			puppet module install puppetlabs-mysql
+		 	fi 	
+		 	
 		 		
             
             "
