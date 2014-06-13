@@ -11,39 +11,47 @@ include baseconfig
 
 node 'master' {
   
-    class { '::mysql::server':
+
+  class { 'puppetdb':
+    
+    listen_address   => '0.0.0.0',
+    #ssl_listen_address => '0.0.0.0', 
+    listen_port      => '8080',
+    #ssl_listen_port => '8081',
+    open_listen_port => true,
+    open_ssl_listen_port => true,
+    disable_ssl      => true
+       
+  }
+
+  # Configure the puppet master to use puppetdb
+  class { 'puppetdb::master::config':
+    puppetdb_server => 'master',
+    require => Class['puppetdb']
+  }
+  
+  class { '::mysql::server':
     root_password    => 'descartes',
     override_options => {
       'mysqld' => {
         'max_connections' => '1024'
       }
     }
-  } ->
+  } 
   
-  class { 'dashboard':
-    dashboard_ensure   => 'present',
-    dashboard_user     => 'puppet-dbuser',
-    dashboard_group    => 'puppet-dbgroup',
-    dashboard_password => 'changeme',
-    dashboard_db       => 'dashboard_prod',
-    dashboard_charset  => 'utf8',
-    dashboard_site     => $fqdn,
-    dashboard_port     => '3000',
-    mysql_root_pw      => 'descartes',
-    passenger          => true,
-  }
-
-  class { 'puppetdb':
-    listen_address   => 'master',
-    listen_port      => '8080',
-    open_listen_port => true,
-    disable_ssl      => true
-  }
-
-  # Configure the puppet master to use puppetdb
-  class { 'puppetdb::master::config':
-    puppetdb_server => 'master',
-  }
+#  class { 'dashboard':
+#    dashboard_ensure   => 'present',
+#    dashboard_user     => 'puppet-dbuser',
+#    dashboard_group    => 'puppet-dbgroup',
+#    dashboard_password => 'changeme',
+#    dashboard_db       => 'dashboard_prod',
+#    dashboard_charset  => 'utf8',
+#    dashboard_site     => $fqdn,
+#    dashboard_port     => '3000',
+#    mysql_root_pw      => 'descartes',
+#    passenger          => true,
+#    require => Class['::mysql::server']
+#  }
 
 }
 

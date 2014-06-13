@@ -3,7 +3,7 @@
 #
 domain   = 'coetzee.com'
 box      =  'centos65-x86_64_2'
-url      = 'http://files.vagrantup.com/precise32.box'
+url      = 'http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-puppet.box'
 
 
 nodes = [
