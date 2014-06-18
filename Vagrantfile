@@ -26,37 +26,31 @@ Vagrant.configure("2") do |config|
     c.vm.provision :puppet do |puppet|
       	puppet.manifests_path = 'puppet/manifests'
     	puppet.manifest_file = 'site.pp'
-    	puppet.module_path = 'puppet/modules'
+    	puppet.module_path = ['puppet/modules']
     	puppet.hiera_config_path = "hiera.yaml"
     	puppet.working_directory = "/vagrant"
     end
     
     config.vm.provision :shell do |shell|
         shell.inline = "
-            #rpm -ivh http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm           
-                        
-            if [ ! -d /etc/puppet/modules/puppetdb ];
-            then
-                puppet module install puppetlabs-puppetdb
-            fi
+            #rpm -ivh http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
+            export MODULE_DIR=/etc/puppet/modules   
             
-            if [ ! -d /etc/puppet/modules/jdk7 ];
-		 		then
-		 			puppet module install -f biemond-jdk7
-		 	fi
-		 			 	
-		 	if [ ! -d /etc/puppet/modules/dashboard ];
-		 		then
-		 			puppet module install puppetlabs-dashboard
-		 	fi
-		 	
-		 	if [ ! -d /etc/puppet/modules/mysql ];
-		 		then
-		 			puppet module install puppetlabs-mysql
-		 	fi 	
-		 	
-		 		
+            function e {
+               if [ ! -d $MODULE_DIR/$1 ];
+	            then
+	                puppet module install $2 --modulepath $MODULE_DIR
+	            fi
+           	}
             
+            #echo 'Copying modules into $MODULE_DIR'
+            #cp -Rn /vagrant/modules/* $MODULE_DIR 
+            e mysql puppetlabs-mysql
+            e jdk7 biemond-jdk7
+            e puppetdb puppetlabs-puppetdb
+            e dashboard puppetlabs-dashboard
+            #echo 'Backing up $MODULE_DIR'            
+            #cp -Rf $MODULE_DIR/* /vagrant/modules || true
             "
     end
     
@@ -85,27 +79,33 @@ Vagrant.configure("2") do |config|
 
 		  config.vm.provision :shell do |shell|
 		 	shell.inline = "
-		 		if [ ! -d /etc/puppet/modules/jdk7 ];
-		 		then
-		 			puppet module install -f biemond-jdk7
-		 		fi
-		 		
-		 		if [ ! -d /etc/puppet/modules/nfs ];
-		 		then
-		 			puppet module install haraldsk-nfs
-		 		fi
-		 		
-		 		if [ ! -d /etc/puppet/modules/mysql ];
-		 		then
-		 			puppet module install puppetlabs-mysql
-		 		fi 				
+		 		 export MODULE_DIR=/vagrant/modules     
+            
+	            function e {
+	               if [ ! -d $MODULE_DIR/$1 ];
+		            then
+		                puppet module install $2 --modulepath $MODULE_DIR
+		            fi
+	           	}
+	           	
+	           	function f {
+	               if [ ! -d $MODULE_DIR/$1 ];
+		            then
+		                puppet module install $2 --modulepath $MODULE_DIR --version $3
+		            fi
+	           	}
+	            
+	            e nfs haraldsk-nfs
+	            e jdk7 biemond-jdk7
+	            e mysql puppetlabs-mysql
+		 			 				
 		 		"
 		  end
 		
 		  config.vm.provision :puppet do |puppet|
 		    puppet.manifests_path = 'puppet/manifests'
 		    puppet.manifest_file = 'site.pp'
-		    puppet.module_path = 'puppet/modules'
+		    puppet.module_path = ['puppet/modules','modules']
 		    puppet.hiera_config_path = "hiera.yaml"
 		    puppet.working_directory = "/vagrant"
 		  end
