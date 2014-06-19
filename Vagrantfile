@@ -29,6 +29,7 @@ Vagrant.configure("2") do |config|
     	puppet.module_path = ['puppet/modules']
     	puppet.hiera_config_path = "hiera.yaml"
     	puppet.working_directory = "/vagrant"
+    	#puppet.options = "--verbose --debug"
     end
     
     config.vm.provision :shell do |shell|
@@ -42,20 +43,16 @@ Vagrant.configure("2") do |config|
 	                puppet module install $2 --modulepath $MODULE_DIR
 	            fi
            	}
-            
-            #echo 'Copying modules into $MODULE_DIR'
-            #cp -Rn /vagrant/modules/* $MODULE_DIR 
+             
             e mysql puppetlabs-mysql
             e jdk7 biemond-jdk7
             e puppetdb puppetlabs-puppetdb
-            e dashboard puppetlabs-dashboard
-            #echo 'Backing up $MODULE_DIR'            
-            #cp -Rf $MODULE_DIR/* /vagrant/modules || true
+            e dashboard puppetlabs-dashboard            
             "
     end
     
-    c.vm.network :forwarded_port, guest: 5432, host: 15432
-    c.vm.network :forwarded_port, guest: 8080, host: 18080
+    c.vm.network :forwarded_port, guest: 5432
+    c.vm.network :forwarded_port, guest: 8080
     config.vm.network "private_network", ip: "192.168.0.41"
   end 
   
@@ -75,40 +72,15 @@ Vagrant.configure("2") do |config|
 	          '--name', node[:hostname],
 	          '--memory', memory.to_s
 	        ]
+	        
+
+	        
 	     end
 
-		  config.vm.provision :shell do |shell|
-		 	shell.inline = "
-		 		 export MODULE_DIR=/vagrant/modules     
-            
-	            function e {
-	               if [ ! -d $MODULE_DIR/$1 ];
-		            then
-		                puppet module install $2 --modulepath $MODULE_DIR
-		            fi
-	           	}
-	           	
-	           	function f {
-	               if [ ! -d $MODULE_DIR/$1 ];
-		            then
-		                puppet module install $2 --modulepath $MODULE_DIR --version $3
-		            fi
-	           	}
-	            
-	            e nfs haraldsk-nfs
-	            e jdk7 biemond-jdk7
-	            e mysql puppetlabs-mysql
-		 			 				
-		 		"
-		  end
-		
-		  config.vm.provision :puppet do |puppet|
-		    puppet.manifests_path = 'puppet/manifests'
-		    puppet.manifest_file = 'site.pp'
-		    puppet.module_path = ['puppet/modules','modules']
-		    puppet.hiera_config_path = "hiera.yaml"
-		    puppet.working_directory = "/vagrant"
-		  end
+		  config.vm.provision "puppet_server" do |puppet|
+    		puppet.puppet_server = 'master.'+domain
+    		puppet.puppet_node = node[:hostname]+'.'+domain
+  		  end
 
       
     end
