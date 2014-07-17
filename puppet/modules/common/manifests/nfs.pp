@@ -1,23 +1,19 @@
-define common::nfs (
-  $base_dir = '/common_data', 
-  $group = 'atlassian'
-) {
-  
-  file { $base_dir: 
-    group   => $group,
-    ensure  => directory,
+#
+# $share should be one of /common_data/jira, /common_data/confluence, etc
+#
+define common::nfs ($share = $title, $base_dir = '/atlassian_home', $group = 'atlassian', $server = 'common.coetzee.com', $owner=undef) {
+  file { $base_dir:
+    group  => $group,
+    ensure => directory,
+    recurse => true,
+    owner => $owner,
   }
-  
-  
-    include nfs::client
-    
-    Nfs::Client::Mount <<| |>> {
-      ensure => 'mounted',
-      mount  => $base_dir,
-      require => [File[$base_dir]]  
-    }
-  
-  
-  
+
+  nfs::client::mount { $base_dir:
+    server  => $server,
+    share   => $share,
+    atboot  => true,
+    options => 'rsize=8192,wsize=8192,timeo=14,intr,rw'
+  }
 
 }

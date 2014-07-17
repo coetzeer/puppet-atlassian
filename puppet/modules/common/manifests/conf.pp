@@ -1,29 +1,22 @@
 
-define common::conf ($export = '/common_data') {
-  if !defined(File[$export]) {
-    file { $export: ensure => directory, }
+class common::conf ($export = '/common_data', $owner = 'root', $group = 'atlassian', $jira_uid = undef, $confluence_uid = undef) {
+  file { $export:
+    ensure => directory,
+    owner  => $owner,
+    group  => $group
   }
 
   include nfs::server
 
   nfs::server::export { $export:
     ensure  => 'mounted',
-    clients => '192.168.0.0/24(rw,async,no_root_squash) localhost(rw)',
+    clients => '192.168.0.0/16(rw,insecure,async,no_root_squash) localhost(rw)',
     require => File[$export],
-  }
-
-  class { '::mysql::server':
-    root_password    => 'descartes',
-    override_options => {
-      'mysqld' => {
-        'max_connections' => '1024'
-      }
-    }
   }
 
   common::user { 'jira':
     username => 'jira',
-    uid      => '20001'
+    uid      => $jira_uid
   }
 
   file { "${export}/jira":
@@ -36,7 +29,7 @@ define common::conf ($export = '/common_data') {
   user { 'confluence':
     ensure           => present,
     name             => 'confluence',
-    uid              => '20002',
+    uid              => $confluence_uid,
     groups           => 'atlassian',
     password         => 'confluence',
     password_min_age => '0',

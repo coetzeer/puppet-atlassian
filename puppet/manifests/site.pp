@@ -9,73 +9,24 @@ class { 'baseconfig':
 # all boxes get the base config
 include baseconfig
 
-node 'master' {
-  
-  package { 'puppet-server':
-    
-  }
-  
-  class { 'puppetdb::master::config':
-    puppetdb_server => 'master',
-    puppetdb_port => '8080',
-    require => Package['puppet-server'],
-   
-  }
-   
-  
-  class { 'puppetdb':
-    
-    listen_address   => '0.0.0.0',
-    ssl_listen_address => '0.0.0.0', 
-    listen_port      => '8080',
-    ssl_listen_port => '8081',
-    open_listen_port => true,
-    open_ssl_listen_port => true,
-    disable_ssl      => false,
-       
-  }
-
-
-  class { 'dashboard':
-    dashboard_ensure   => 'present',
-    dashboard_user     => 'puppet-dbuser',
-    dashboard_group    => 'puppet-dbgroup',
-    dashboard_password => 'changeme',
-    dashboard_db       => 'dashboard_prod',
-    dashboard_charset  => 'utf8',
-    dashboard_site     => $fqdn,
-    dashboard_port     => '8082',
-    mysql_root_pw      => 'descartes',
-    passenger          => false,
-    require => Class['puppetdb'],
-  }
-  
-  firewall { "3000 accept - puppetdb":
-      port   => '3000',
-      proto  => 'tcp',
-      action => 'accept',
-    }
-
-}
+$confuence_uid = '20005'
+$jira_uid = '20001'
 
 node 'common' {
-  include common
-
-  common::conf { 'common_stuff': export => "/common_data" }
+  class { 'common':
+    confluence_uid => $confuence_uid,
+    jira_uid       => $jira_uid,
+  }
 
 }
 
 node 'jira' {
-  common::user { 'jira':
-    username => 'jira',
-    uid      => '20001'
-  }
+  class { 'jira': uid => $jira_uid }
 
-  common::nfs { '/common_data':
-    base_dir => '/common_data',
-    group    => 'atlassian'
-  }
+}
 
+node 'confluence' {
+  class { 'confluence': uid => $confuence_uid }
 }
 
 node 'crowd' {
@@ -96,13 +47,6 @@ node 'fisheye' {
   common::user { 'fisheye':
     username => 'stash',
     uid      => '20003'
-  }
-}
-
-node 'confluence' {
-  common::user { 'confluence':
-    username => 'stash',
-    uid      => '20005'
   }
 }
 

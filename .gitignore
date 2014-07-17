@@ -1,4 +1,4 @@
 puppet/binaries/*
 .vagrant/*
 /.vagrant/
-/metadata.json
+/repo/

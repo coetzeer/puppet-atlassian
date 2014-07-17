@@ -1,5 +1,5 @@
 define common::user (
-  $username = undef, 
+  $username = $title, 
   $uid = undef, 
   $group = 'atlassian', 
   $gid = '20001'
