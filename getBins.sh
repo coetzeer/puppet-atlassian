@@ -1,13 +1,14 @@
-#!/bin/bash -e
-           
+#!/bin/bash
 
 mkdir -p /vagrant/puppet/binaries 
 
 function get_binary {
-	cd /vagrant/puppet/binaries
-   if [ ! -f $1 ];
+    cd /vagrant/puppet/binaries
+	echo "checking for file $1"
+    if [ ! -f $1 ];
     then
-        wget $2
+	echo "Downloading $1"
+        wget $2 -O $1
     fi
 }
 
