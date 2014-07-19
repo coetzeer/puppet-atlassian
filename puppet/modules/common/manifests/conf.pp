@@ -1,5 +1,14 @@
 
-class common::conf ($export = '/common_data', $owner = 'root', $group = 'atlassian', $jira_uid = undef, $confluence_uid = undef) {
+class common::conf (
+  $export         = '/common_data',
+  $owner          = 'root',
+  $group          = 'atlassian',
+  $jira_uid       = undef,
+  $confluence_uid = undef,
+  $fisheye_uid    = undef,
+  $crowd_uid      = undef,
+  $stash_uid      = undef,
+  $bamboo_uid     = undef,) {
   file { $export:
     ensure => directory,
     owner  => $owner,
@@ -47,7 +56,7 @@ class common::conf ($export = '/common_data', $owner = 'root', $group = 'atlassi
   user { 'fisheye':
     ensure           => present,
     name             => 'fisheye',
-    uid              => '20003',
+    uid              => $fisheye_uid,
     groups           => 'atlassian',
     password         => 'fisheye',
     password_min_age => '0',
@@ -65,7 +74,7 @@ class common::conf ($export = '/common_data', $owner = 'root', $group = 'atlassi
   user { 'crowd':
     ensure           => present,
     name             => 'crowd',
-    uid              => '20004',
+    uid              => $crowd_uid,
     groups           => 'atlassian',
     password         => 'crowd',
     password_min_age => '0',
@@ -83,7 +92,7 @@ class common::conf ($export = '/common_data', $owner = 'root', $group = 'atlassi
   user { 'stash':
     ensure           => present,
     name             => 'stash',
-    uid              => '20005',
+    uid              => $stash_uid,
     groups           => 'atlassian',
     password         => 'stash',
     password_min_age => '0',
@@ -101,7 +110,7 @@ class common::conf ($export = '/common_data', $owner = 'root', $group = 'atlassi
   user { 'bamboo':
     ensure           => present,
     name             => 'bamboo',
-    uid              => '20006',
+    uid              => $bamboo_uid,
     groups           => 'atlassian',
     password         => 'bamboo',
     password_min_age => '0',

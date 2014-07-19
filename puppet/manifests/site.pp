@@ -9,13 +9,21 @@ class { 'baseconfig':
 # all boxes get the base config
 include baseconfig
 
-$confuence_uid = '20005'
+$confuence_uid = '20002'
 $jira_uid = '20001'
+$fisheye_uid = '20003'
+$crowd_uid = '20004'
+$stash_uid = '20005'
+$bamboo_uid = '20006'
 
 node 'common' {
   class { 'common':
     confluence_uid => $confuence_uid,
     jira_uid       => $jira_uid,
+    fisheye_uid    => $fisheye_uid,
+    crowd_uid      => $crowd_uid,
+    stash_uid      => $stash_uid,
+    bamboo_uid     => $bamboo_uid,
   }
 
 }
