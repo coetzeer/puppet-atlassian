@@ -65,6 +65,7 @@ install_module sudo saz-sudo
 install_module nfs haraldsk-nfs --ignore-dependencies
 install_module jdk7 biemond-jdk7
 install_module archive camptocamp-archive
+install_module epel stahnma-epel
 commit_git
 
 add_host pf 192.168.2.19

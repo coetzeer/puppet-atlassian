@@ -1,16 +1,4 @@
-define common::user (
-  $username = $title, 
-  $uid = undef, 
-  $group = 'atlassian', 
-  $gid = '20001'
-) {
-  
-  group { "${username}_${group}" :
-    name   => $group,
-    ensure => present,
-    gid    => $gid
-  }
-
+define common::user ($username = $title, $uid = undef, $group = 'atlassian',) {
   user { $username:
     ensure           => present,
     name             => $username,

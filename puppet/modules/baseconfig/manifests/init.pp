@@ -24,6 +24,10 @@ class baseconfig {
     locality => 'Dublin',
   }
 
+  class { 'epel':
+    epel_proxy => 'absent'
+  }
+
   Exec {
     path => ["/bin/", "/sbin/", "/usr/bin/", "/usr/sbin/"] }
 
