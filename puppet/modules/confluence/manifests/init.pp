@@ -12,12 +12,12 @@ class confluence (
     ensure => present,
     gid    => $gid
   } ->
-  common::user { $user:
+  baseconfig::user { $user:
     username => $user,
     uid      => $uid
   }
 
-  common::nfs_client { $nfs_share:
+  baseconfig::nfs_client { $nfs_share:
     base_dir => $atlassian_home,
     server   => $nfs_server,
     owner    => $user,

@@ -1,5 +1,5 @@
-define common::server_user ($username = $title, $uid = undef, $group = 'atlassian', $gid = '20001', $export = undef,) {
-  common::user { $username:
+define baseconfig::server_user ($username = $title, $uid = undef, $group = 'atlassian', $gid = '20001', $export = undef,) {
+  baseconfig::user { $username:
     username => $username,
     uid      => $uid
   }

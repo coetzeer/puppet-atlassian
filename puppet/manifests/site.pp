@@ -38,28 +38,28 @@ node 'confluence' {
 }
 
 node 'crowd' {
-  common::user { 'crowd':
+  baseconfig::user { 'crowd':
     username => 'crowd',
     uid      => '20004'
   }
 }
 
 node 'stash' {
-  common::user { 'stash':
+  baseconfig::user { 'stash':
     username => 'stash',
     uid      => '20005'
   }
 }
 
 node 'fisheye' {
-  common::user { 'fisheye':
+  baseconfig::user { 'fisheye':
     username => 'stash',
     uid      => '20003'
   }
 }
 
 node 'bamboo' {
-  common::user { 'bamboo':
+  baseconfig::user { 'bamboo':
     username => 'bamboo',
     uid      => '20006'
   }

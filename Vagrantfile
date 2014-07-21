@@ -2,7 +2,7 @@
 # Pulling out all the stops with cluster of seven Vagrant boxes.
 #
 domain   = 'coetzee.com'
-box      =  'centos65-x86_64_2'
+box      =  'centos65-x86_64_3'
 url      = 'http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-puppet.box'
 
 

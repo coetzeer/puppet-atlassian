@@ -1,4 +1,4 @@
-define common::user ($username = $title, $uid = undef, $group = 'atlassian',) {
+define baseconfig::user ($username = $title, $uid = undef, $group = 'atlassian',) {
   user { $username:
     ensure           => present,
     name             => $username,

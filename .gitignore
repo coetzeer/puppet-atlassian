@@ -3,3 +3,4 @@ puppet/binaries/*
 /.vagrant/
 /repo/
 /metadata.json
+*.sh~

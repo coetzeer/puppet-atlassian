@@ -1,7 +1,7 @@
 #
 # $share should be one of /common_data/jira, /common_data/confluence, etc
 #
-define common::nfs_client (
+define baseconfig::nfs_client (
   $share    = $title,
   $base_dir = '/atlassian_home',
   $group    = 'atlassian',

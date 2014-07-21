@@ -11,37 +11,37 @@ class common::conf (
   $gid            = undef) {
 
 
-  common::server_user { 'jira':
+  baseconfig::server_user { 'jira':
     uid    => $jira_uid,
     export => $export,
     group  => $group
   }
 
-  common::server_user { 'confluence':
+  baseconfig::server_user { 'confluence':
     uid    => $confluence_uid,
     export => $export,
     group  => $group
   }
 
-  common::server_user { 'fisheye':
+  baseconfig::server_user { 'fisheye':
     uid    => $fisheye_uid,
     export => $export,
     group  => $group
   }
 
-  common::server_user { 'crowd':
+  baseconfig::server_user { 'crowd':
     uid    => $crowd_uid,
     export => $export,
     group  => $group
   }
 
-  common::server_user { 'stash':
+  baseconfig::server_user { 'stash':
     uid    => $stash_uid,
     export => $export,
     group  => $group
   }
 
-  common::server_user { 'bamboo':
+  baseconfig::server_user { 'bamboo':
     uid    => $bamboo_uid,
     export => $export,
     group  => $group
