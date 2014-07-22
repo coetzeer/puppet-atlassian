@@ -12,58 +12,19 @@ class jira (
   $max_memory            = $jira::params::max_memory,
   $min_memory            = $jira::params::min_memory,
   $direct_nfs_folder     = $jira::params::direct_nfs_folder,) inherits jira::params {
-  group { $group:
-    name   => $group,
-    ensure => present,
-    gid    => $gid
-  } ->
-  baseconfig::user { $user:
-    username => $user,
-    uid      => $uid
-  }
-
-  file { $installation_base_dir:
-    group   => $group,
-    owner   => $user,
-    ensure  => directory,
-    # recurse => true,
-    require => User[$user]
-  }
-
-  file { $atlassian_home:
-    group   => $group,
-    owner   => $user,
-    ensure  => directory,
-    recurse => true,
-    require => User[$user]
-  }
-
-  if ($do_nfs) {
-    baseconfig::nfs_client { $nfs_share:
-      base_dir => $nfs_mount,
-      server   => $nfs_server,
-      owner    => $user,
-      require  => [User[$user]]
-    }
-
-    file { "${nfs_mount}/${direct_nfs_folder}":
-      group   => $group,
-      owner   => $user,
-      ensure  => directory,
-      recurse => true,
-      require => User[$user]
-    }
-
-    file { "${atlassian_home}/${direct_nfs_folder}":
-      ensure  => 'link',
-      target  => "${nfs_mount}/data",
-      require => File["${nfs_mount}/data"]
-    }
-
-    cron { "sync ${atlassian_home} to ${nfs_mount} ":
-      command => "rsync -r --exclude '${direct_nfs_folder}' ${atlassian_home}/* ${nfs_mount}",
-      minute  => '*/5',
-    }
+  
+  class { 'jira::pre_installation':
+    user                  => $user,
+    atlassian_home        => $atlassian_home,
+    installation_base_dir => $installation_base_dir,
+    do_nfs                => $do_nfs,
+    nfs_share             => $nfs_share,
+    nfs_mount             => $nfs_mount,
+    nfs_server            => $nfs_server,
+    uid                   => $uid,
+    group                 => $group,
+    gid                   => $gid,
+    direct_nfs_folder     => $direct_nfs_folder
   }
 
   file { "${installation_base_dir}/response.varfile":
