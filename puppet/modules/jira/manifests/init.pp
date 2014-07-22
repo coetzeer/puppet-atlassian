@@ -11,8 +11,9 @@ class jira (
   $gid                   = $jira::params::gid,
   $max_memory            = $jira::params::max_memory,
   $min_memory            = $jira::params::min_memory,
-  $direct_nfs_folder     = $jira::params::direct_nfs_folder,) inherits jira::params {
-  
+  $direct_nfs_folder     = $jira::params::direct_nfs_folder,
+  $mysql_server          = $jira::params::mysql_server,
+  $mysql_connector       = $jira::params::mysql_connector) inherits jira::params {
   class { 'jira::pre_installation':
     user                  => $user,
     atlassian_home        => $atlassian_home,
@@ -27,22 +28,15 @@ class jira (
     direct_nfs_folder     => $direct_nfs_folder
   }
 
+  Exec {
+    path => ["/bin/", "/sbin/", "/usr/bin/", "/usr/sbin/"] }
+
   file { "${installation_base_dir}/response.varfile":
     ensure  => present,
     content => template('jira/response_file.erb'),
     owner   => $user,
     group   => $group,
     mode    => 755,
-  }
-
-  Exec {
-    path => ["/bin/", "/sbin/", "/usr/bin/", "/usr/sbin/"] }
-
-  archive { 'mysql-connector-java-5.1.31':
-    ensure     => present,
-    src_target => '/tmp',
-    url        => 'http://192.168.2.42/mysql-connector-java-5.1.31.tar.gz',
-    target     => '/opt',
   }
 
   baseconfig::remote_file { "/opt/atlassian/${user}.bin":
@@ -56,6 +50,7 @@ class jira (
     command => "/opt/atlassian/${user}.bin -q -varfile /opt/atlassian/response.varfile",
     creates => "/opt/atlassian/${user}",
     require => File["/opt/atlassian/${user}.bin"],
+    tries   => 5,
     user    => "${user}"
   }
 
@@ -70,32 +65,15 @@ class jira (
     require => Exec["stop $user"],
   }
 
-  file { "/opt/atlassian/jira/lib/mysql-connector-java-5.1.31.jar":
-    source  => "/opt/mysql-connector-java-5.1.31/mysql-connector-java-5.1.31-bin.jar",
-    group   => $group,
-    owner   => $user,
-    require => [Exec["install $user"], Archive['mysql-connector-java-5.1.31']],
-  }
-
-  file { "/opt/atlassian/jira/atlassian-jira/WEB-INF/lib/mysql-connector-java-5.1.31.jar":
-    source  => "/opt/mysql-connector-java-5.1.31/mysql-connector-java-5.1.31-bin.jar",
-    group   => $group,
-    owner   => $user,
-    require => [Exec["install $user"], Archive['mysql-connector-java-5.1.31']],
-  }
-
-  file { "/opt/atlassian/jira/lib/mail-1.4.5.jar":
-    source  => "/opt/atlassian/jira/atlassian-jira/WEB-INF/lib/mail-1.4.5.jar",
-    group   => $group,
-    owner   => $user,
-    require => Exec["install $user"],
-  }
-
-  file { "/opt/atlassian/jira/lib/activation-1.1.1.jar":
-    source  => "/opt/atlassian/jira/atlassian-jira/WEB-INF/lib/activation-1.1.1.jar",
-    group   => $group,
-    owner   => $user,
-    require => Exec["install $user"],
+  class { 'jira::post_installation':
+    user            => $user,
+    group           => $group,
+    max_memory      => $max_memory,
+    min_memory      => $min_memory,
+    mysql_server    => $mysql_server,
+    mysql_connector => $mysql_connector,
+    require         => Exec["install $user"],
+    notify          => Service["jira"],
   }
 
   file { "/etc/init.d/${user}":
@@ -104,90 +82,23 @@ class jira (
     owner   => $user,
     group   => $group,
     mode    => 755,
-    require => Exec["install $user"],
+    require => Class['jira::pre_installation'],
   }
 
   service { $user:
     ensure     => running,
     enable     => true,
-    hasrestart => true,
+    hasrestart => false,
     hasstatus  => false,
     require    => [File["/etc/init.d/${user}"], Exec["stop $user"]],
   }
 
-  augeas { 'jira_tomcat_context':
-    changes => 'set /files/opt/atlassian/jira/conf/server.xml/Server/Service/Engine/Host/Context/#attribute/path jira',
-    incl    => '/opt/atlassian/jira/conf/server.xml',
-    lens    => 'Xml.lns',
-    notify  => Service["jira"],
-    require => Exec["install $user"],
-  }
-
-  augeas { 'jira_tomcat_context_db':
-    changes => [
-      'ins Resource after /files/opt/atlassian/jira/conf/server.xml/Server/Service/Engine/Host/Context/Resource[last()]',
-      'defvar Resource /files/opt/atlassian/jira/conf/server.xml/Server/Service/Engine/Host/Context/Resource[last()]',
-      'set $Resource/#attribute/name "jdbc/JiraDS"',
-      'set $Resource/#attribute/type "javax.sql.DataSource"',
-      'set $Resource/#attribute/driverClassName "com.mysql.jdbc.Driver"',
-      'set $Resource/#attribute/url "jdbc:mysql://common.coetzee.com:3306/jira',
-      'set $Resource/#attribute/maxActive "20"',
-      'set $Resource/#attribute/validationQuery "select 1"',
-      'set $Resource/#attribute/username "jira"',
-      'set $Resource/#attribute/password "jira"',
+  apache::vhost { $fqdn:
+    proxy_pass      => [{
+        'path' => '/jira',
+        'url'  => 'http://$fqdn/jira'
+      }
       ],
-    incl    => '/opt/atlassian/jira/conf/server.xml',
-    lens    => 'Xml.lns',
-    notify  => Service["jira"],
-    require => Exec["install $user"],
-    onlyif  => 'match /files/opt/atlassian/jira/conf/server.xml/Server/Service/Engine/Host/Context/Resource/#attribute/name not_include  jdbc/JiraDS'
+    request_headers => [ 'unset Authorization',],
   }
-
-  augeas { 'jira_tomcat_context_mail':
-    changes => [
-      'ins Resource after /files/opt/atlassian/jira/conf/server.xml/Server/Service/Engine/Host/Context/Resource[last()]',
-      'defvar Resource /files/opt/atlassian/jira/conf/server.xml/Server/Service/Engine/Host/Context/Resource[last()]',
-      'set $Resource/#attribute/name "mail/SmtpServer"',
-      'set $Resource/#attribute/type "javax.mail.Session"',
-      'set $Resource/#attribute/auth "Container"',
-      'set $Resource/#attribute/mail.smtp.host "common.coetzee.com"',
-      'set $Resource/#attribute/mail.smtp.port "25"',
-      ],
-    incl    => '/opt/atlassian/jira/conf/server.xml',
-    lens    => 'Xml.lns',
-    notify  => Service["jira"],
-    require => Exec["install $user"],
-    onlyif  => 'match /files/opt/atlassian/jira/conf/server.xml/Server/Service/Engine/Host/Context/Resource/#attribute/name not_include  mail/SmtpServer'
-  }
-
-  # TODO externalize and inject memory args here
-
-  file_line { 'jira_min_memory':
-    path    => '/opt/atlassian/jira/bin/setenv.sh',
-    line    => "JVM_MINIMUM_MEMORY=\"${min_memory}\"",
-    match   => '^JVM_MINIMUM_MEMORY=.*$',
-    ensure  => present,
-    require => Exec["install $user"],
-  }
-
-  file_line { 'jira_max_memory':
-    path    => '/opt/atlassian/jira/bin/setenv.sh',
-    line    => "JVM_MAXIMUM_MEMORY=\"${max_memory}\"",
-    match   => '^JVM_MAXIMUM_MEMORY=.*$',
-    ensure  => present,
-    require => Exec["install $user"],
-  }
-
-  #  augeas { 'jira_memory_args':
-  #    changes => [
-  #      'set /file/opt/atlassian/jira/bin/setenv.sh/JVM_MINIMUM_MEMORY "1024"',
-  #      'set /file/opt/atlassian/jira/bin/setenv.sh/JVM_MAXIMUM_MEMORY "2048"',
-  #      ],
-  #    incl    => 'opt/atlassian/jira/bin/setenv.sh',
-  #    lens    => 'Shellvars.lns',
-  #    notify  => Service["jira"],
-  #    require => Exec["install $user"],
-  #    #onlyif  => 'match /files/opt/atlassian/jira/conf/server.xml/Server/Service/Engine/Host/Context/Resource/#attribute/name
-  #    not_include  mail/SmtpServer'
-  #  }
 }

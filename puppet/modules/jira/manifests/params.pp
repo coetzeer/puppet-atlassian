@@ -13,6 +13,8 @@ class jira::params () {
   $max_memory = '2048m'
   $min_memory = '1024m'
   $direct_nfs_folder = 'data'
+  $mysql_connector = 'mysql-connector-java-5.1.31'
+  $mysql_server = 'common.coetzee.com'
 
   class { 'apache::params': }
 
