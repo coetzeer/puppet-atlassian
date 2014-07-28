@@ -23,20 +23,14 @@ Vagrant.configure("2") do |config|
 	      node_config.vm.box = node[:box]
 	      node_config.vm.box_url = url
 	      node_config.vm.host_name = node[:hostname] + '.' + domain
-	      config.vm.network "private_network", ip: node[:ip]
-	
-	      memory = node[:ram] ? node[:ram] : 256;
-	     
-	      config.vm "virtualbox" do |v|
-	      v.customize[
-	          'modifyvm', :id,
-	          '--name', node[:hostname],
-	          '--memory', memory.to_s
-	        ]
-	        
+	      node_config.vm.network "private_network", ip: node[:ip]
+	      node_config.vm.boot_timeout = 600	
+	     	node_config.vm.provider "virtualbox" do |v|
+			  v.memory = node[:ram]
+			  v.cpus = 1
 
-	        
-	     end
+			end
+		  
 
 		 config.vm.provision "shell", path: "provision.sh"
 

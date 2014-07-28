@@ -16,6 +16,7 @@ class jira::post_installation (
     checksum   => false
   }
 
+  file { '/usr/share/java/': ensure => directory, } ->
   file { '/usr/share/java/mysql-connector-java.jar':
     source  => "/opt/${mysql_connector}/${mysql_connector}-bin.jar",
     ensure  => 'link',

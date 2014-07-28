@@ -94,11 +94,25 @@ class jira (
   }
 
   apache::vhost { $fqdn:
+    port            => '80',
     proxy_pass      => [{
         'path' => '/jira',
-        'url'  => 'http://$fqdn/jira'
+        'url'  => "http://${fqdn}/jira"
       }
       ],
-    request_headers => [ 'unset Authorization',],
+    request_headers => ['unset Authorization',],
+    docroot => "/vagrant/puppet/binaries",
+    custom_fragment => 'ProxyPreserveHost       On'
   }
+
+  class { 'apache':
+    mpm_module    => 'prefork',
+    default_vhost => false,
+  }
+
+  #  apache::vhost { $fqdn:
+  #    port    => '80',
+  #    docroot => "/vagrant/puppet/binaries",
+  #  ,
+  #  }
 }

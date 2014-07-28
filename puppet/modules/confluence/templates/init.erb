@@ -1,30 +1,31 @@
 #!/bin/sh -e
-# JIRA startup script
+# Confluence startup script
 #chkconfig: 2345 80 05
-#description: JIRA
+#description: Confluence
 #
-# https://confluence.atlassian.com/display/JIRA/Starting+JIRA+Automatically+on+Linux
+#https://confluence.atlassian.com/display/DOC/Start+Confluence+Automatically+on+Linux
+#
  
 # Define some variables
 # Name of app ( JIRA, Confluence, etc )
-APP=jira
+APP=confluence
 # Name of the user to run as
-USER=jira
+USER=confluence
 # Location of application's bin directory
-BASE=/opt/atlassian/jira
+CATALINA_HOME=/opt/atlassian/confluence
 # Location of Java JDK
-#export JAVA_HOME=/opt/atlassian/jira/jre
+#export JAVA_HOME=/usr/lib/jvm/java-6-sun
  
 case "$1" in
   # Start command
   start)
     echo "Starting $APP"
-    /bin/su -m $USER -c "cd $BASE/logs && $BASE/bin/startup.sh &> /dev/null"
+    /bin/su -m $USER -c "$CATALINA_HOME/bin/startup.sh &> /dev/null"
     ;;
   # Stop command
   stop)
     echo "Stopping $APP"
-    /bin/su -m $USER -c "$BASE/bin/shutdown.sh &> /dev/null"
+    /bin/su -m $USER -c "$CATALINA_HOME/bin/shutdown.sh &> /dev/null"
     echo "$APP stopped successfully"
     ;;
    # Restart command
