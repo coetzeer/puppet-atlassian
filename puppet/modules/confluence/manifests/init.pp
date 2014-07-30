@@ -57,14 +57,9 @@ class confluence (
   }
 
   exec { "stop $user":
-    command => "pkill -u confluence1 java",
+    command => "pkill java",
     require => Exec["install $user"],
-    onlyif  => ["test 0 -ne ` pgrep -u confluence1 java | wc -l`"]
-  }
-
-  user { 'confluence1':
-    ensure  => absent,
-    require => Exec["stop $user"],
+    onlyif  => ["test 0 -ne ` pgrep java | wc -l`"]
   }
 
   class { 'confluence::post_installation':

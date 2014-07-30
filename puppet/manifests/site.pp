@@ -45,10 +45,8 @@ node 'crowd' {
 }
 
 node 'stash' {
-  baseconfig::user { 'stash':
-    username => 'stash',
-    uid      => '20005'
-  }
+  
+   class { 'stash': uid => $stash_uid }
 }
 
 node 'fisheye' {

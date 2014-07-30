@@ -46,80 +46,73 @@ class confluence::post_installation (
   }
 
 
-#  augeas { 'jira_tomcat_context':
-#    changes => 'set /files/opt/atlassian/jira/conf/server.xml/Server/Service/Engine/Host/Context/#attribute/path jira',
-#    incl    => '/opt/atlassian/jira/conf/server.xml',
-#    lens    => 'Xml.lns',
-#  }
-#
-#  augeas { 'jira_tomcat_context_db':
-#    changes => [
-#      'ins Resource after /files/opt/atlassian/jira/conf/server.xml/Server/Service/Engine/Host/Context/Resource[last()]',
-#      'defvar Resource /files/opt/atlassian/jira/conf/server.xml/Server/Service/Engine/Host/Context/Resource[last()]',
-#      'set $Resource/#attribute/name "jdbc/JiraDS"',
-#      'set $Resource/#attribute/type "javax.sql.DataSource"',
-#      'set $Resource/#attribute/driverClassName "com.mysql.jdbc.Driver"',
-#      "set \$Resource/#attribute/url \"jdbc:mysql://${mysql_server}:3306/jira\"",
-#      'set $Resource/#attribute/maxActive "20"',
-#      'set $Resource/#attribute/validationQuery "select 1"',
-#      'set $Resource/#attribute/username "jira"',
-#      'set $Resource/#attribute/password "jira"',
-#      ],
-#    incl    => '/opt/atlassian/jira/conf/server.xml',
-#    lens    => 'Xml.lns',
-#    onlyif  => 'match /files/opt/atlassian/jira/conf/server.xml/Server/Service/Engine/Host/Context/Resource/#attribute[name="jdbc/JiraDS"] size == 0'
-#  }
-#
-#  augeas { 'jira_tomcat_context_mail':
-#    changes => [
-#      'ins Resource after /files/opt/atlassian/jira/conf/server.xml/Server/Service/Engine/Host/Context/Resource[last()]',
-#      'defvar Resource /files/opt/atlassian/jira/conf/server.xml/Server/Service/Engine/Host/Context/Resource[last()]',
-#      'set $Resource/#attribute/name "mail/SmtpServer"',
-#      'set $Resource/#attribute/type "javax.mail.Session"',
-#      'set $Resource/#attribute/auth "Container"',
-#      "set \$Resource/#attribute/mail.smtp.host \"common.coetzee.com\"",
-#      'set $Resource/#attribute/mail.smtp.port "25"',
-#      ],
-#    incl    => '/opt/atlassian/jira/conf/server.xml',
-#    lens    => 'Xml.lns',
-#    onlyif  => 'match /files/opt/atlassian/jira/conf/server.xml/Server/Service/Engine/Host/Context/Resource/#attribute[name="mail/SmtpServer"] size == 0'
-#  }
-#
-#  augeas { 'proxy_connector':
-#    changes => [
-#      'ins Connector after /files/opt/atlassian/jira/conf/server.xml/Server/Service/Connector[last()]',
-#      'defvar Connector /files/opt/atlassian/jira/conf/server.xml/Server/Service/Connector[last()]',
-#      'set $Connector/#attribute/acceptCount "100"',
-#      'set $Connector/#attribute/connectionTimeout "20000"',
-#      'set $Connector/#attribute/disableUploadTimeout "true"',
-#      'set $Connector/#attribute/enableLookups "true"',
-#      'set $Connector/#attribute/maxHttpHeaderSize "8192"',
-#      'set $Connector/#attribute/maxThreads "150"',
-#      'set $Connector/#attribute/minSpareThreads "25"',
-#      'set $Connector/#attribute/port "8081"',
-#      'set $Connector/#attribute/protocol "HTTP/1.1"',
-#      'set $Connector/#attribute/redirectPort "8443"',
-#      'set $Connector/#attribute/useBodyEncodingForURI "true"',
-#      "set \$Connector/#attribute/proxyName \"${fqdn}\"",
-#      'set $Connector/#attribute/proxyPort "80"',
-#      ],
-#    incl    => '/opt/atlassian/jira/conf/server.xml',
-#    lens    => 'Xml.lns',
-#    onlyif  => 'match /files/opt/atlassian/jira/conf/server.xml/Server/Service/Connector/#attribute[port="8081"] size == 0'
-#  }
-#
-#  file_line { 'jira_min_memory':
-#    path   => '/opt/atlassian/jira/bin/setenv.sh',
-#    line   => "JVM_MINIMUM_MEMORY=\"${min_memory}\"",
-#    match  => '^JVM_MINIMUM_MEMORY=.*$',
-#    ensure => present,
-#  }
-#
-#  file_line { 'jira_max_memory':
-#    path   => '/opt/atlassian/jira/bin/setenv.sh',
-#    line   => "JVM_MAXIMUM_MEMORY=\"${max_memory}\"",
-#    match  => '^JVM_MAXIMUM_MEMORY=.*$',
-#    ensure => present,
-#  }
+  augeas { 'tomcat_context':
+    changes => 'set /files/opt/atlassian/confluence/conf/server.xml/Server/Service/Engine/Host/Context/#attribute/path confluence',
+    incl    => '/opt/atlassian/confluence/conf/server.xml',
+    lens    => 'Xml.lns',
+  }
+
+  augeas { 'confluence_tomcat_context_db':
+    changes => [
+      'ins Resource after /files/opt/atlassian/confluence/conf/server.xml/Server/Service/Engine/Host/Context[#attribute/path = "confluence"]/Manager',
+      'defvar Resource /files/opt/atlassian/confluence/conf/server.xml/Server/Service/Engine/Host/Context[#attribute/path = "confluence"]/Resource[1]',
+      'set $Resource/#attribute/name "jdbc/ConfluenceDS"',
+      'set $Resource/#attribute/type "javax.sql.DataSource"',
+      'set $Resource/#attribute/driverClassName "com.mysql.jdbc.Driver"',
+      "set \$Resource/#attribute/url \"jdbc:mysql://${mysql_server}:3306/confluence&useUnicode=true&characterEncoding=utf8\"",
+      'set $Resource/#attribute/maxActive "20"',
+      'set $Resource/#attribute/validationQuery "select 1"',
+      'set $Resource/#attribute/username "confluence"',
+      'set $Resource/#attribute/password "confluence"',
+      ],
+    incl    => '/opt/atlassian/confluence/conf/server.xml',
+    lens    => 'Xml.lns',
+    onlyif  => 'match /files/opt/atlassian/confluence/conf/server.xml/Server/Service/Engine/Host/Context/Resource/#attribute[name="jdbc/ConfluenceDS"] size == 0'
+  }
+
+  augeas { 'confluence_tomcat_context_mail':
+    changes => [
+      'ins Resource after /files/opt/atlassian/confluence/conf/server.xml/Server/Service/Engine/Host/Context[#attribute/path = "confluence"]/Manager',
+      'defvar Resource /files/opt/atlassian/confluence/conf/server.xml/Server/Service/Engine/Host/Context[#attribute/path = "confluence"]/Resource[1]',
+      'set $Resource/#attribute/name "mail/SmtpServer"',
+      'set $Resource/#attribute/type "javax.mail.Session"',
+      'set $Resource/#attribute/auth "Container"',
+      "set \$Resource/#attribute/mail.smtp.host \"common.coetzee.com\"",
+      'set $Resource/#attribute/mail.smtp.port "25"',
+      ],
+    incl    => '/opt/atlassian/confluence/conf/server.xml',
+    lens    => 'Xml.lns',
+    onlyif  => 'match /files/opt/atlassian/confluence/conf/server.xml/Server/Service/Engine/Host/Context/Resource/#attribute[name="mail/SmtpServer"] size == 0'
+  }
+
+  augeas { 'proxy_connector':
+    changes => [
+      'ins Connector after /files/opt/atlassian/confluence/conf/server.xml/Server/Service/Connector[last()]',
+      'defvar Connector /files/opt/atlassian/confluence/conf/server.xml/Server/Service/Connector[last()]',
+      'set $Connector/#attribute/acceptCount "100"',
+      'set $Connector/#attribute/connectionTimeout "20000"',
+      'set $Connector/#attribute/disableUploadTimeout "true"',
+      'set $Connector/#attribute/enableLookups "true"',
+      'set $Connector/#attribute/maxHttpHeaderSize "8192"',
+      'set $Connector/#attribute/maxThreads "150"',
+      'set $Connector/#attribute/minSpareThreads "25"',
+      'set $Connector/#attribute/port "8081"',
+      'set $Connector/#attribute/protocol "HTTP/1.1"',
+      'set $Connector/#attribute/redirectPort "8443"',
+      'set $Connector/#attribute/useBodyEncodingForURI "true"',
+      "set \$Connector/#attribute/proxyName \"${fqdn}\"",
+      'set $Connector/#attribute/proxyPort "80"',
+      ],
+    incl    => '/opt/atlassian/confluence/conf/server.xml',
+    lens    => 'Xml.lns',
+    onlyif  => 'match /files/opt/atlassian/confluence/conf/server.xml/Server/Service/Connector/#attribute[port="8081"] size == 0'
+  }
+
+  file_line { 'confluence_memory':
+    path   => '/opt/atlassian/confluence/bin/setenv.sh',
+    line   => "JAVA_OPTS=\"-Xms${min_memory} -Xmx${max_memory} -XX:MaxPermSize=256m \$JAVA_OPTS -Djava.awt.headless=true \"",
+    match  => '^JAVA_OPTS=.*$',
+    ensure => present,
+  }
 
 }

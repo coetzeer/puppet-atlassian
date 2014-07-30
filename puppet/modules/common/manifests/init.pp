@@ -25,8 +25,7 @@ class common (
   # custom_fragment => template('phabricator/apache-vhost-default.conf.erb'),
   }
 
-
-  #TODO inject listen address from top
+  # TODO inject listen address from top
   class { '::mysql::server':
     root_password    => $mysql_root_passwd,
     override_options => {
@@ -36,6 +35,8 @@ class common (
         'transaction-isolation'  => 'READ-COMMITTED',
         'default-storage-engine' => 'INNODB',
         'character-set-server'   => 'utf8',
+        'collation-server'       => 'utf8_bin',
+        'max_allowed_packet'     => '32M',
       }
     }
   }

@@ -14,7 +14,8 @@ class jira (
   $direct_nfs_folder     = $jira::params::direct_nfs_folder,
   $mysql_server          = $jira::params::mysql_server,
   $mysql_connector       = $jira::params::mysql_connector) inherits jira::params {
-  class { 'jira::pre_installation':
+  
+  class { 'baseconfig::pre_installation':
     user                  => $user,
     atlassian_home        => $atlassian_home,
     installation_base_dir => $installation_base_dir,
@@ -82,7 +83,7 @@ class jira (
     owner   => $user,
     group   => $group,
     mode    => 755,
-    require => Class['jira::pre_installation'],
+    require => Class['baseconfig::pre_installation'],
   }
 
   service { $user:

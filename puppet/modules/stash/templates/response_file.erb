@@ -3,13 +3,15 @@
 ##################################
 
 
+#install4j response file for JIRA 6.2
+#Thu Feb 27 08:59:08 UTC 2014
 rmiPort$Long=8005
+app.jiraHome=<%= @atlassian_home %>
 app.install.service$Boolean=false
-existingInstallationDir=<%= @installation_base_dir %>/confluence
+existingInstallationDir=/tmp/jira
 sys.confirmedUpdateInstallationString=false
 sys.languageId=en
-sys.installationDir=<%= @installation_base_dir %>/confluence
-app.confHome=<%= @atlassian_home %>
+sys.installationDir=<%= @installation_base_dir %>/jira
 executeLauncherAction$Boolean=true
 httpPort$Long=8080
-portChoice=custom
+portChoice=default
