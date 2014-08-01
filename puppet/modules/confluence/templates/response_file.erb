@@ -5,10 +5,10 @@
 
 rmiPort$Long=8005
 app.install.service$Boolean=false
-existingInstallationDir=<%= @installation_base_dir %>/confluence
+existingInstallationDir=<%= @installation_base_dir %>/<%= @user %>
 sys.confirmedUpdateInstallationString=false
 sys.languageId=en
-sys.installationDir=<%= @installation_base_dir %>/confluence
+sys.installationDir=<%= @installation_base_dir %>/<%= @user %>
 app.confHome=<%= @atlassian_home %>
 executeLauncherAction$Boolean=true
 httpPort$Long=8080

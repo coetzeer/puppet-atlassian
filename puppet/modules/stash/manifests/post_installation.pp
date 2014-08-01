@@ -31,26 +31,26 @@ class stash::post_installation (
     require => File['/usr/share/java/mysql-connector-java.jar'],
   }
 
-#  file { "/opt/atlassian/stash/atlassian-jira/WEB-INF/lib/mysql-connector-java.jar":
-#    source  => "/usr/share/java/mysql-connector-java.jar",
-#    group   => $group,
-#    owner   => $user,
-#    links   => follow,
-#    require => File['/usr/share/java/mysql-connector-java.jar'],
-#  }
-#
-#  file { "/opt/atlassian/stash/lib/mail-1.4.5.jar":
-#    source => "/opt/atlassian/stash/atlassian-jira/WEB-INF/lib/mail-1.4.5.jar",
-#    group  => $group,
-#    owner  => $user,
-#  }
-#
-#  file { "/opt/atlassian/stash/lib/activation-1.1.1.jar":
-#    source => "/opt/atlassian/stash/atlassian-jira/WEB-INF/lib/activation-1.1.1.jar",
-#    group  => $group,
-#    owner  => $user,
-#  }
-#
+  file { "/opt/atlassian/stash/atlassian-stash/WEB-INF/lib/mysql-connector-java.jar":
+    source  => "/usr/share/java/mysql-connector-java.jar",
+    group   => $group,
+    owner   => $user,
+    links   => follow,
+    require => File['/usr/share/java/mysql-connector-java.jar'],
+  }
+
+  file { "/opt/atlassian/stash/lib/mail-1.4.5.jar":
+    source => "/opt/atlassian/stash/atlassian-stash/WEB-INF/lib/mail-1.4.5.jar",
+    group  => $group,
+    owner  => $user,
+  }
+
+  file { "/opt/atlassian/stash/lib/activation-1.1.1.jar":
+    source => "/opt/atlassian/stash/atlassian-stash/WEB-INF/lib/activation-1.1.1.jar",
+    group  => $group,
+    owner  => $user,
+  }
+
 #  augeas { 'stash_tomcat_context':
 #    changes => 'set /files/opt/atlassian/stash/conf/server.xml/Server/Service/Engine/Host/Context/#attribute/path stash',
 #    incl    => '/opt/atlassian/stash/conf/server.xml',

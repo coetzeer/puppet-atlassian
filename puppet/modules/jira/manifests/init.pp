@@ -98,7 +98,7 @@ class jira (
     port            => '80',
     proxy_pass      => [{
         'path' => '/jira',
-        'url'  => "http://${fqdn}/jira"
+        'url'  => "http://${fqdn}:8080/jira"
       }
       ],
     request_headers => ['unset Authorization',],

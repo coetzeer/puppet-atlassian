@@ -8,10 +8,10 @@
 rmiPort$Long=8005
 app.jiraHome=<%= @atlassian_home %>
 app.install.service$Boolean=false
-existingInstallationDir=/tmp/jira
+existingInstallationDir=/tmp/<%= @user %>
 sys.confirmedUpdateInstallationString=false
 sys.languageId=en
-sys.installationDir=<%= @installation_base_dir %>/jira
+sys.installationDir=<%= @installation_base_dir %>/<%= @user %>
 executeLauncherAction$Boolean=true
 httpPort$Long=8080
 portChoice=default
