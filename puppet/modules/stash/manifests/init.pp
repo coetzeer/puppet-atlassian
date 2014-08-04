@@ -13,7 +13,7 @@ class stash (
   $min_memory            = $stash::params::min_memory,
   $direct_nfs_folder     = $stash::params::direct_nfs_folder,
   $mysql_server          = $stash::params::mysql_server,
-  $mysql_connector       = $stash::params::mysql_connector) inherits stash::params {
+  $mysql_connector       = $stash::params::mysql_connector,) inherits stash::params {
   class { 'baseconfig::pre_installation':
     user                  => $user,
     atlassian_home        => $atlassian_home,
@@ -28,20 +28,16 @@ class stash (
     direct_nfs_folder     => $direct_nfs_folder
   }
 
-  #package { ['perl-Git',''git']: ensure => absent } ->
-  package { ['perl-Git','git']: ensure => absent } ->
   class { 'repoforge':
-    enabled     => ['rpmforge', 'extras'],
-    includepkgs => {
-      'extras' => 'git-1.7.12.4-1.el6.rfx.x86_64'
-    }
-    ,
-  }
+    enabled => ['rpmforge', 'extras']
+  } ->
+  package { ['git']: ensure => '1.7.12.4-1.el6.rfx' }
 
   Exec {
     path => ["/bin/", "/sbin/", "/usr/bin/", "/usr/sbin/"] }
 
-  file { "${installation_base_dir}/response.varfile":
+  file { "install var file":
+    path    => "${installation_base_dir}/response.varfile",
     ensure  => present,
     content => template('stash/response_file.erb'),
     owner   => $user,
@@ -87,24 +83,31 @@ class stash (
     notify          => Service[$user],
   }
 
-  #
-  #  file { "/etc/init.d/${user}":
-  #    ensure  => present,
-  #    content => template('stash/init.erb'),
-  #    owner   => $user,
-  #    group   => $group,
-  #    mode    => 755,
-  #    require => Class['baseconfig::pre_installation'],
-  #  }
-  #
-    service { $user:
-      ensure     => running,
-      enable     => true,
-      hasrestart => false,
-      hasstatus  => false,
-      require    => Exec["stop $user"],
-    }
-  
+  file { "/opt/atlassian/${user}/bin/user.sh":
+    ensure  => present,
+    content => "export STASH_USER=${user}",
+    owner   => $user,
+    group   => $group,
+    mode    => 755,
+    require => Class['baseconfig::pre_installation'],
+  } ->
+  file { "/etc/init.d/${user}":
+    ensure  => present,
+    content => template('stash/init.erb'),
+    owner   => $user,
+    group   => $group,
+    mode    => 755,
+    require => Class['baseconfig::pre_installation'],
+  }
+
+  service { $user:
+    ensure     => running,
+    enable     => true,
+    hasrestart => false,
+    hasstatus  => false,
+    require    => Exec["stop $user"],
+  }
+
   apache::vhost { $fqdn:
     port            => '80',
     proxy_pass      => [{
@@ -122,8 +125,8 @@ class stash (
     default_vhost => false,
   }
 
-#  apache::vhost { $fqdn:
-#    port    => '80',
-#    docroot => "/vagrant/puppet/binaries",
-#  }
+  #  apache::vhost { $fqdn:
+  #    port    => '80',
+  #    docroot => "/vagrant/puppet/binaries",
+  #  }
 }

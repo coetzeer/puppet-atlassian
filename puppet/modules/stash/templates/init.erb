@@ -1,30 +1,30 @@
 #!/bin/sh -e
-# JIRA startup script
+# Stash startup script
 #chkconfig: 2345 80 05
-#description: JIRA
+#description: Stash
 #
 # https://confluence.atlassian.com/display/JIRA/Starting+JIRA+Automatically+on+Linux
  
 # Define some variables
 # Name of app ( JIRA, Confluence, etc )
-APP=jira
+APP=stash
 # Name of the user to run as
-USER=jira
+USER=stash
 # Location of application's bin directory
-BASE=/opt/atlassian/jira
+BASE=/opt/atlassian/stash
 # Location of Java JDK
-#export JAVA_HOME=/opt/atlassian/jira/jre
+#export JAVA_HOME=/opt/atlassian/stash/jre
  
 case "$1" in
   # Start command
   start)
     echo "Starting $APP"
-    /bin/su -m $USER -c "cd $BASE/logs && $BASE/bin/startup.sh &> /dev/null"
+    /bin/su -m $USER -c "cd $BASE/logs && $BASE/bin/start-stash.sh  &> /dev/null"
     ;;
   # Stop command
   stop)
     echo "Stopping $APP"
-    /bin/su -m $USER -c "$BASE/bin/shutdown.sh &> /dev/null"
+    /bin/su -m $USER -c "$BASE/bin/stop-stash.sh &> /dev/null"
     echo "$APP stopped successfully"
     ;;
    # Restart command

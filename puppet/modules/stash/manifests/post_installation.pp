@@ -39,8 +39,8 @@ class stash::post_installation (
     require => File['/usr/share/java/mysql-connector-java.jar'],
   }
 
-  file { "/opt/atlassian/stash/lib/mail-1.4.5.jar":
-    source => "/opt/atlassian/stash/atlassian-stash/WEB-INF/lib/mail-1.4.5.jar",
+  file { "/opt/atlassian/stash/lib/mail-1.4.7.jar":
+    source => "/opt/atlassian/stash/atlassian-stash/WEB-INF/lib/mail-1.4.7.jar",
     group  => $group,
     owner  => $user,
   }
@@ -51,12 +51,12 @@ class stash::post_installation (
     owner  => $user,
   }
 
-#  augeas { 'stash_tomcat_context':
-#    changes => 'set /files/opt/atlassian/stash/conf/server.xml/Server/Service/Engine/Host/Context/#attribute/path stash',
-#    incl    => '/opt/atlassian/stash/conf/server.xml',
-#    lens    => 'Xml.lns',
-#  }
-#
+  augeas { 'stash_tomcat_context':
+    changes => 'set /files/opt/atlassian/stash/conf/server.xml/Server/Service/Engine/Host/Context/#attribute/path stash',
+    incl    => '/opt/atlassian/stash/conf/server.xml',
+    lens    => 'Xml.lns',
+  }
+
 #  augeas { 'stash_tomcat_context_db':
 #    changes => [
 #      'ins Resource after /files/opt/atlassian/stash/conf/server.xml/Server/Service/Engine/Host/Context/Resource[last()]',
@@ -113,18 +113,18 @@ class stash::post_installation (
 #    onlyif  => 'match /files/opt/atlassian/stash/conf/server.xml/Server/Service/Connector/#attribute[port="8081"] size == 0'
 #  }
 #
-#  file_line { 'stash_min_memory':
-#    path   => '/opt/atlassian/stash/bin/setenv.sh',
-#    line   => "JVM_MINIMUM_MEMORY=\"${min_memory}\"",
-#    match  => '^JVM_MINIMUM_MEMORY=.*$',
-#    ensure => present,
-#  }
-#
-#  file_line { 'stash_max_memory':
-#    path   => '/opt/atlassian/stash/bin/setenv.sh',
-#    line   => "JVM_MAXIMUM_MEMORY=\"${max_memory}\"",
-#    match  => '^JVM_MAXIMUM_MEMORY=.*$',
-#    ensure => present,
-#  }
+  file_line { 'min_memory':
+    path   => '/opt/atlassian/stash/bin/setenv.sh',
+    line   => "JVM_MINIMUM_MEMORY=\"${min_memory}\"",
+    match  => '^JVM_MINIMUM_MEMORY=.*$',
+    ensure => present,
+  }
+
+  file_line { 'jira_max_memory':
+    path   => '/opt/atlassian/stash/bin/setenv.sh',
+    line   => "JVM_MAXIMUM_MEMORY=\"${max_memory}\"",
+    match  => '^JVM_MAXIMUM_MEMORY=.*$',
+    ensure => present,
+  }
 
 }

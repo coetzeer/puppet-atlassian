@@ -10,13 +10,15 @@ define baseconfig::server_user ($username = $title, $uid = undef, $group = 'atla
     ensure  => directory,
     require => User[$username]
   }
-  
-  #TODO externalize host here
+
+  # TODO externalize host here
   mysql::db { $username:
-      user     =>  $username,
-      password =>  $username,
-      host     => "${username}.coetzee.com",
-      grant    => ['ALL'],
-    }
+    user     => $username,
+    password => $username,
+    host     => "${username}.coetzee.com",
+    charset  => 'utf8',
+    collate  => 'utf8_bin',
+    grant    => ['ALL'],
+  }
 
 }

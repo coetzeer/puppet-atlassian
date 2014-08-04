@@ -10,7 +10,7 @@ class stash::params () {
   $uid = undef
   $group = 'atlassian'
   $gid = '20001'
-  $max_memory = '2048m'
+  $max_memory = '1024m'
   $min_memory = '1024m'
   $direct_nfs_folder = 'data'
   $mysql_connector = 'mysql-connector-java-5.1.31'
